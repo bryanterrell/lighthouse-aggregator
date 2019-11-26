@@ -1,17 +1,22 @@
 {
-  "name": "lighthouse-runner",
+  "name": "lighthouse-aggregator",
   "version": "1.0.0",
   "main": "main.js",
   "scripts": {
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "tslint -p tsconfig.json",
+    "build": "tsc",
     "test": "ts-node main.ts --action=test",
-    "test:clear": "rm -rf ./testRuns/*",
     "report": "ts-node main.ts --action=report",
-    "comp": "ts-node main.ts --action=comp"
+    "compares": "ts-node main.ts --action=comp"
   },
   "devDependencies": {
     "@types/node": "^12.12.11",
     "cross-env": "^6.0.3",
+    "prettier": "^1.19.1",
     "ts-node": "^8.5.2",
+    "tslint": "^5.20.1",
+    "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.7.2"
   },
   "dependencies": {
@@ -19,5 +24,8 @@
     "idx": "^2.5.6",
     "lighthouse": "^5.6.0",
     "minimist": "^1.2.0"
+  },
+  "rules": {
+    "no-console": false
   }
 }
