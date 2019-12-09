@@ -1,7 +1,7 @@
 import fs from 'fs'
 import idx from 'idx'
 import path from 'path'
-import { GetJsonFile, GetTestPath, IsDirectory, ITestAverage, ITestRun } from './utils'
+import { GetJsonFile, GetTestDir, GetReportFile, IsDirectory, ITestAverage, ITestRun } from './utils'
 
 const getNonzeroArray = (array, field) => {
   return array.filter(f => !isNaN(f[field]) && f[field] > 0).map(m => m[field])
@@ -64,7 +64,7 @@ const RunReport = async (reportName: string) => {
     console.log(`Processing lighthouse tests for report "${reportName}"`)
     const report: ITestAverage[] = []
 
-    const groupPath = GetTestPath(reportName)
+    const groupPath = GetTestDir(reportName)
 
     const testFolders = fs
       .readdirSync(groupPath)
@@ -78,7 +78,7 @@ const RunReport = async (reportName: string) => {
     }
 
     // console.log(report)
-    fs.writeFileSync(`${groupPath}/report.json`, JSON.stringify(report))
+    fs.writeFileSync(`${GetReportFile(reportName)}`, JSON.stringify(report))
   } catch (error) {
     console.log('[RunReport] Uncaught Exception:', error)
   }

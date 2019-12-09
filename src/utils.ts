@@ -1,8 +1,24 @@
 import fs from 'fs'
 
-export const GetTestPath = (testName: string) => `./tests/${testName}`
+export const CreateDir = (dir: string) => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true })
+  }
+}
 
-export const IsDirectory = (source: string) => fs.lstatSync(source).isDirectory()
+export const GetTestDir = (testName: string) => `./tests/${testName}`
+
+export const GetTestFile = (testName: string) => `${GetTestDir(testName)}/tests.json`
+
+export const GetReportFile = (testName: string) => `${GetTestDir(testName)}/report.json`
+
+export const IsDirectory = (source: string) => {
+  if (fs.existsSync(source)) {
+    return fs.lstatSync(source).isDirectory()  
+  } else {
+    return false
+  }
+}
 
 export const GetJsonFile = (filepath: string) => fs.readFileSync(filepath, 'utf8')
 

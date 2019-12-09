@@ -2,7 +2,7 @@ import * as chromeLauncher from 'chrome-launcher'
 import fs from 'fs'
 import lighthouse from 'lighthouse/lighthouse-core'
 import ReportGenerator from 'lighthouse/lighthouse-core/report/report-generator'
-import { GetDisplayDate, GetJsonFile, GetTestPath } from './utils'
+import { CreateDir, IsDirectory, GetDisplayDate, GetJsonFile, GetTestDir, GetTestFile } from './utils'
 
 interface IRunTest {
   groupPath: string
@@ -20,21 +20,21 @@ const DEFAULT_CHROME_OPTIONS = {
   chromeFlags: [],
 }
 
-export const launchChrome = async (options: chromeLauncher.Options = DEFAULT_CHROME_OPTIONS) => {
+const launchChrome = async (options: chromeLauncher.Options = DEFAULT_CHROME_OPTIONS) => {
   chrome = await chromeLauncher.launch({
     chromeFlags: options.chromeFlags,
   })
   console.log('Chrome has been launched.')
 }
 
-export const killChrome = async () => {
+const killChrome = async () => {
   if (chrome) {
     await chrome.kill()
     console.log('Chrome has been killed.')
   }
 }
 
-export const runTest = async ({ groupPath, testName, url, options = DEFAULT_CHROME_OPTIONS }: IRunTest) => {
+const runTest = async ({ groupPath, testName, url, options = DEFAULT_CHROME_OPTIONS }: IRunTest) => {
   options.port = chrome.port
 
   try {
@@ -54,23 +54,19 @@ export const runTest = async ({ groupPath, testName, url, options = DEFAULT_CHRO
     const dir = `${groupPath}/${testName}`
     const filename = GetDisplayDate()
 
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir)
-    }
+    CreateDir(dir)
 
     fs.writeFileSync(`${dir}/${filename}.json`, jsonReport)
-    console.log(`---> Successfully Wrote to File: /${dir}/${filename}.json`)
+    console.log(`---> Successfully Wrote to File: ${dir}/${filename}.json`)
   } catch (error) {
     throw error
   }
 }
 
-async function RunTests(groupName: string, filterTest?: string[]) {
-  await launchChrome()
-
+export async function RunSingleTest(testGroup: string, filterTest?: string[]) {
   try {
-    const groupPath = GetTestPath(groupName)
-    const jsonFile = GetJsonFile(`${groupPath}/tests.json`)
+    const groupPath = GetTestDir(testGroup)
+    const jsonFile = GetJsonFile(GetTestFile(testGroup))
     const jsonContent = JSON.parse(jsonFile)
 
     // https://www.darraghoriordan.com/2019/08/04/looping-await-each-item/
@@ -83,8 +79,37 @@ async function RunTests(groupName: string, filterTest?: string[]) {
   } catch (error) {
     console.log('[RunTests] Uncaught Exception:', error)
   }
-
-  killChrome()
 }
 
-export default RunTests
+interface IRunTests {
+  count: string
+  testGroups: string[]
+  filter: string[]
+}
+
+export async function RunTests({ testGroups, count, filter }: IRunTests) {
+  const validTestGroups = []
+  for (const testGroup of testGroups) {
+    const testJsonPath = GetTestFile(testGroup)
+    if (fs.existsSync(testJsonPath)) {
+      validTestGroups.push(testGroup)
+    } else {
+      console.log(`Test not found - Skipping: ${testJsonPath}`)
+    }
+  }
+
+  if (validTestGroups.length > 0) {
+    await launchChrome()
+
+    // console.log('RunTests:', { count, testGroups, filter })
+    const countNbr: number = parseInt(count)
+    for (let i = 0; i < countNbr; i++) {
+      console.log('[RunSetOfTests] Test Run # ', i + 1)
+      for (const testGroup of validTestGroups) {
+        await RunSingleTest(testGroup)
+      }
+    }
+
+    killChrome()
+  }
+}

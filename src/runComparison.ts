@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import RunReport from './runReport'
-import { GetDisplayDate, GetJsonFile, GetTestPath, ITestAverage } from './utils'
+import { GetDisplayDate, GetJsonFile, GetTestDir, GetReportFile, ITestAverage } from './utils'
 
 interface IReportTest {
   testName: string
@@ -36,7 +36,7 @@ const RunComparison = async (comparisonName: string) => {
       const reports = []
       comparison.reports.forEach(report => {
         // now process the report
-        const reportPath = path.join(GetTestPath(report), 'report.json')
+        const reportPath = GetReportFile(report)
         let reportFile: string
         try {
           reportFile = GetJsonFile(reportPath)

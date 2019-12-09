@@ -1,36 +1,52 @@
-import fs from 'fs'
 import minimist from 'minimist'
+import { CreateTest, AddTest } from './maintainTest'
 import RunComparison from './runComparison'
 import RunReport from './runReport'
-import RunTests from './runTests'
-import { GetTestPath } from './utils'
+// import { RunTests, RunSetOfTests } from './runTests'
+import { RunTests } from './runTests'
 
 const argv = minimist(process.argv.slice(2))
-// console.dir(argv)
+console.dir(argv)
+console.dir(argv._)
 
-if (argv.action === 'compare') {
-  const comparisonName = argv._[0]
-  RunComparison(comparisonName)
-} else {
-  const sessionName = argv._[0]
-  const sessionPath = GetTestPath(sessionName)
+const arg1 = argv._[0]
 
-  if (!fs.existsSync(sessionPath)) {
-    console.error(`Requested folder not found: ${sessionPath}`)
-  } else {
-    switch (argv.action) {
-      case 'test':
-        const filter = argv._ && argv._.length > 1 ? argv._[1] : ''
-        RunTests(sessionName, filter)
-        break
+switch (argv.action) {
+  case 'compare-tests':
+    RunComparison(arg1)
+    break
 
-      case 'report':
-        RunReport(sessionName)
-        break
+  case 'create-test':
+    CreateTest(arg1)
+    break
 
-      default:
-        console.log(`Unknown action: ${argv.action}`)
-        break
+  case 'add-test':
+    if (argv._.length > 2) {
+      const testName = arg1
+      const testUrl = argv._[2]
+      AddTest({ testGroupName: arg1, testName, testUrl })
+    } else {
+      console.log(
+        `[add-test] action requires params: Test Group Name, Test Name, Test Url. But only received: "${argv._.join(
+          ', ',
+        )}"`,
+      )
     }
-  }
+    break
+
+  case 'run-test':
+    RunTests({
+      testGroups: argv._,
+      count: argv.count || '1',
+      filter: argv.filter
+    })
+    break
+
+  case 'report':
+    RunReport(arg1)
+    break
+
+  default:
+    console.log(`Unknown action: ${argv.action}`)
+    break
 }

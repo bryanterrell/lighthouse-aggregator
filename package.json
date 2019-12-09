@@ -1,14 +1,17 @@
 {
   "name": "lighthouse-aggregator",
   "version": "1.0.0",
+  "license": "MIT",
   "main": "main.js",
   "scripts": {
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "tslint -p tsconfig.json",
     "build": "tsc",
-    "test": "ts-node src/main.ts --action=test",
+    "create": "ts-node src/main.ts --action=create-test",
+    "add": "ts-node src/main.ts --action=add-test",
+    "test": "ts-node src/main.ts --action=run-test",
     "report": "ts-node src/main.ts --action=report",
-    "compare": "ts-node src/main.ts --action=compare"
+    "compare": "ts-node src/main.ts --action=compare-tests"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
