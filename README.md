@@ -29,8 +29,10 @@ filter    Filter URLs to test by URL name      none
 ### Add Test
 
 ```
-yarn run add --test=imdb --url=https://www.imdb.com/title/tt0137523/
-yarn run add --test=moviedb --url=https://www.themoviedb.org/movie/550-fight-club
+yarn run add --name=fightclub --test=imdb --url=https://www.imdb.com/title/tt0137523/
+yarn run add --name=fightclub --test=moviedb --url=https://www.themoviedb.org/movie/550-fight-club
+yarn run add --name=amelie --test=imdb --url=https://www.imdb.com/title/tt0211915/
+yarn run add --name=amelie --test=moviedb --url=https://www.themoviedb.org/movie/194-le-fabuleux-destin-d-am-lie-poulain/
 ```
 
 ### Run Tests

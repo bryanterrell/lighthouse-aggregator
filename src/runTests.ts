@@ -106,7 +106,7 @@ export async function RunTests({ tests, loop, filter }: IRunTests) {
     // console.log('RunTests:', { loop, tests, filter })
     const loopNbr: number = parseInt(loop)
     for (let i = 0; i < loopNbr; i++) {
-      logger.info('[RunSetOfTests] Test Run # ', i + 1)
+      logger.info(`[RunSetOfTests] Test Run # ${i + 1}`)
       for (const test of validTestGroups) {
         await RunSingleTest(test, filter)
       }

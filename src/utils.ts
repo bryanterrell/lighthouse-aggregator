@@ -52,14 +52,11 @@ export const GetJsonFile = (filePath: string) => fs.readFileSync(filePath, 'utf8
 export const GetTestConfigJson = (test: string): ITestUrl[] => {
   const filePath = GetTestFilePath(test)
   const content = fs.existsSync(filePath) ? GetJsonFile(filePath) : null
-  // const json: ITestUrl[] = content ? JSON.parse(content) : []
-  // return json
   return content ? JSON.parse(content) : []
 }
 
 export const WriteTestConfigJson = (test: string, json: ITestUrl[]) => {
   const filePath = GetTestFilePath(test)
-  console.log('json:', json)
   WriteAndFormatJsonFile(filePath, json)
 }
 

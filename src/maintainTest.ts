@@ -1,3 +1,4 @@
+import logger from './logger'
 import { CreateDir, GetTestDir, GetTestConfigJson, ITestUrl, WriteTestConfigJson } from './utils'
 
 const getTestConfigJson = (test: string): ITestUrl[] => {
@@ -29,4 +30,5 @@ export const AddTest = ({ test, urlName = 'home', url }: ITest) => {
   // console.log(`Adding test to "${test}":`, testUrl)
   // console.log('content:', configJson)
   WriteTestConfigJson(test, configJson)
+  logger.info(`[AddTest] Test "${test}" Succesfully Updated with: `, configJson)
 }

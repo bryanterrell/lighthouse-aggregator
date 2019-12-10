@@ -2,6 +2,7 @@ import fs from 'fs'
 import logger from './logger'
 import RunReport from './runReport'
 import {
+  CreateDir,
   GetAllDirs,
   GetDisplayDate,
   GetJsonFile,
@@ -32,6 +33,9 @@ const getComparisonConfigFromFile = (comparisonName: string): IComparison => get
 export const runComparison = async (comparisonName: string, comparisonConfig: IComparison) => {
   try {
     const testReports: IReportTest[] = []
+
+    // ensure comparison directory exists
+    CreateDir('./comps/')
 
     const date = GetDisplayDate()
     const csvPath = `./comps/${comparisonName}--${date}.csv`
@@ -132,6 +136,7 @@ export const RunCompareTests = (tests: string[]) => {
     }
     comparisonConfig.tests = allTestDirs
 
+    // console.log('runComparison:', { comparisonName, comparisonConfig })
     runComparison(comparisonName, comparisonConfig)
   }
 }
