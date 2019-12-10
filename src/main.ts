@@ -3,7 +3,6 @@ import logger from './logger'
 import { AddTest } from './maintainTest'
 import { RunComparisonConfig, RunCompareTests } from './runComparison'
 import RunReport from './runReport'
-// import { RunTests, RunSetOfTests } from './runTests'
 import { RunTests } from './runTests'
 
 const argv = minimist(process.argv.slice(2))
@@ -15,9 +14,9 @@ const url = argv.url || argv.u
 const urlName = argv.name || argv.n
 const comparison = argv.comparison || argv.compare || argv.c
 
-console.log('argv:', argv)
+// console.log('argv:', argv)
 // console.log('argv._:', argv._)
-console.log('params:', { test, comparison, url, urlName, loop, filter })
+logger.debug('params:', { test, comparison, url, urlName, loop, filter })
 
 switch (argv.action) {
   case 'add-test':

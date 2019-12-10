@@ -59,7 +59,8 @@ export const GetTestConfigJson = (test: string): ITestUrl[] => {
 
 export const WriteTestConfigJson = (test: string, json: ITestUrl[]) => {
   const filePath = GetTestFilePath(test)
-  WriteJsonFile(filePath, json)
+  console.log('json:', json)
+  WriteAndFormatJsonFile(filePath, json)
 }
 
 export const GetDisplayDate = (date?: Date) => {

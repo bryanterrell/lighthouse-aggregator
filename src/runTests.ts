@@ -2,6 +2,7 @@ import * as chromeLauncher from 'chrome-launcher'
 import fs from 'fs'
 import lighthouse from 'lighthouse/lighthouse-core'
 import ReportGenerator from 'lighthouse/lighthouse-core/report/report-generator'
+import logger from './logger'
 import { CreateDir, GetDisplayDate, GetJsonFile, GetTestDir, GetTestFilePath, WriteJsonFile } from './utils'
 
 interface IRunTest {
@@ -24,13 +25,13 @@ const launchChrome = async (options: chromeLauncher.Options = DEFAULT_CHROME_OPT
   chrome = await chromeLauncher.launch({
     chromeFlags: options.chromeFlags,
   })
-  console.log('Chrome has been launched.')
+  logger.info('Chrome has been launched.')
 }
 
 const killChrome = async () => {
   if (chrome) {
     await chrome.kill()
-    console.log('Chrome has been killed.')
+    logger.info('Chrome has been killed.')
   }
 }
 
@@ -47,7 +48,7 @@ const runTest = async ({ groupPath, testName, url, options = DEFAULT_CHROME_OPTI
     })
 
     // console.log('Running lighthouse test on URL:', { url, config })
-    console.log(`Running lighthouse test on URL: ${url}`)
+    logger.info(`Running lighthouse test on URL: ${url}`)
     const results = await lighthouse(url, config)
     const jsonReport = ReportGenerator.generateReport(results.lhr, 'json')
 
@@ -58,7 +59,7 @@ const runTest = async ({ groupPath, testName, url, options = DEFAULT_CHROME_OPTI
 
     // fs.writeFileSync(`${dir}/${filename}.json`, jsonReport)
     WriteJsonFile(`${dir}/${filename}.json`, jsonReport)
-    console.log(`---> Successfully Wrote to File: ${dir}/${filename}.json`)
+    logger.info(`---> Successfully Wrote to File: ${dir}/${filename}.json`)
   } catch (error) {
     throw error
   }
@@ -78,7 +79,7 @@ export async function RunSingleTest(test: string, filterTest?: string[]) {
       }
     }
   } catch (error) {
-    console.log('[RunTests] Uncaught Exception:', error)
+    logger.error('[RunTests] Uncaught Exception:', error)
   }
 }
 
@@ -95,7 +96,7 @@ export async function RunTests({ tests, loop, filter }: IRunTests) {
     if (fs.existsSync(testJsonPath)) {
       validTestGroups.push(test)
     } else {
-      console.log(`Test not found - Skipping: ${testJsonPath}`)
+      logger.warn(`Test not found - Skipping: ${testJsonPath}`)
     }
   }
 
@@ -105,7 +106,7 @@ export async function RunTests({ tests, loop, filter }: IRunTests) {
     // console.log('RunTests:', { loop, tests, filter })
     const loopNbr: number = parseInt(loop)
     for (let i = 0; i < loopNbr; i++) {
-      console.log('[RunSetOfTests] Test Run # ', i + 1)
+      logger.info('[RunSetOfTests] Test Run # ', i + 1)
       for (const test of validTestGroups) {
         await RunSingleTest(test, filter)
       }
