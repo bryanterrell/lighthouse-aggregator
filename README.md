@@ -16,7 +16,7 @@ name      Test URL name (can be filtered)      home
 
 ### Run Tests
 ```
-yarn run test --tests=[tests] [--loop=<# Test Runs>] [--filter=<urlNames>]
+yarn run test --tests=[tests] [--loop=<# test runs>] [--filter=<URL names>]
 
 Arg       Description                          Default Value
 -------   ----------------------------------   --------------
