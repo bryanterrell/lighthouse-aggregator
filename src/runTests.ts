@@ -6,7 +6,7 @@ import logger from './logger'
 import { CreateDir, GetDisplayDate, GetJsonFile, GetTestDir, GetTestFilePath, WriteJsonFile } from './utils'
 
 interface IRunTest {
-  groupPath: string
+  testDirPath: string
   testName: string
   url: string
   options?: chromeLauncher.Options
@@ -35,7 +35,7 @@ const killChrome = async () => {
   }
 }
 
-const runTest = async ({ groupPath, testName, url, options = DEFAULT_CHROME_OPTIONS }: IRunTest) => {
+const runTest = async ({ testDirPath, testName, url, options = DEFAULT_CHROME_OPTIONS }: IRunTest) => {
   options.port = chrome.port
 
   try {
@@ -52,7 +52,7 @@ const runTest = async ({ groupPath, testName, url, options = DEFAULT_CHROME_OPTI
     const results = await lighthouse(url, config)
     const jsonReport = ReportGenerator.generateReport(results.lhr, 'json')
 
-    const dir = `${groupPath}/${testName}`
+    const dir = `${testDirPath}/${testName}`
     const filename = GetDisplayDate()
 
     CreateDir(dir)
@@ -65,17 +65,17 @@ const runTest = async ({ groupPath, testName, url, options = DEFAULT_CHROME_OPTI
   }
 }
 
-export async function RunSingleTest(test: string, filterTest?: string[]) {
+export async function RunSingleTest(testName: string, filterTest?: string[]) {
   try {
-    const groupPath = GetTestDir(test)
-    const jsonFile = GetJsonFile(GetTestFilePath(test))
+    const testDirPath = GetTestDir(testName)
+    const jsonFile = GetJsonFile(GetTestFilePath(testName))
     const jsonContent = JSON.parse(jsonFile)
 
     // https://www.darraghoriordan.com/2019/08/04/looping-await-each-item/
     for (const test of jsonContent) {
       const shouldRunTest = !filterTest || filterTest.includes(test.name)
       if (shouldRunTest) {
-        await runTest({ groupPath, testName: test.name, url: test.url })
+        await runTest({ testDirPath, testName: test.name, url: test.url })
       }
     }
   } catch (error) {
@@ -104,7 +104,7 @@ export async function RunTests({ tests, loop, filter }: IRunTests) {
     await launchChrome()
 
     // console.log('RunTests:', { loop, tests, filter })
-    const loopNbr: number = parseInt(loop)
+    const loopNbr: number = Number(loop)
     for (let i = 0; i < loopNbr; i++) {
       logger.info(`[RunSetOfTests] Test Run # ${i + 1}`)
       for (const test of validTestGroups) {

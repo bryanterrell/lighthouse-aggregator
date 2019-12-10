@@ -41,6 +41,12 @@ To run the `imdb` and `moviedb` test just added, 3 consecutive times, alternatin
 yarn run test --test=imdb,moviedb --loop=3
 ```
 
+### Generate Aggregate Report for Test
+To generate an aggregate report for a test:
+```
+yarn run report --test=imdb
+```
+
 ### Compare Tests
 To compare the ten test runs on the two test URL's created above:
 ```

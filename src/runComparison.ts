@@ -119,8 +119,8 @@ export const RunCompareTests = (tests: string[]) => {
   } else {
     // otherwise run adhoc comparison
   const comparisonConfig = {
-    tests: [],
     reports: [],
+    tests: [],
   }
     let allTestDirs = []
     for (const test of tests) {

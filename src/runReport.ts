@@ -4,8 +4,8 @@ import path from 'path'
 import logger from './logger'
 import {
   GetJsonFile,
-  GetTestDir,
   GetReportFilePath,
+  GetTestDir,
   IsDirectory,
   ITestAverage,
   ITestRun,
@@ -70,14 +70,14 @@ const processTestDir = async (reportName: string, testPath: string) => {
 
 const RunReport = async (reportName: string) => {
   try {
-    logger.info(`Processing lighthouse tests for report "${reportName}"`)
+    // logger.info(`Generating aggregate lighthouse report "${reportName}"`)
     const report: ITestAverage[] = []
 
-    const groupPath = GetTestDir(reportName)
+    const testDirPath = GetTestDir(reportName)
 
     const testFolders = fs
-      .readdirSync(groupPath)
-      .map(name => path.join(groupPath, name))
+      .readdirSync(testDirPath)
+      .map(name => path.join(testDirPath, name))
       .filter(IsDirectory)
 
     // component aggregate test runs
@@ -86,9 +86,9 @@ const RunReport = async (reportName: string) => {
       report.push(aggregate)
     }
 
-    // console.log(report)
-    // fs.writeFileSync(`${GetReportFilePath(reportName)}`, JSON.stringify(report))
-    WriteAndFormatJsonFile(GetReportFilePath(reportName), report)
+    const reportFilePath = GetReportFilePath(reportName)
+    WriteAndFormatJsonFile(reportFilePath, report)
+    logger.info(`Generated report: ${reportFilePath}`)
   } catch (error) {
     logger.error('[RunReport] Uncaught Exception:', error)
   }

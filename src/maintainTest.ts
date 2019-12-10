@@ -1,5 +1,5 @@
 import logger from './logger'
-import { CreateDir, GetTestDir, GetTestConfigJson, ITestUrl, WriteTestConfigJson } from './utils'
+import { CreateDir, GetTestConfigJson, GetTestDir, ITestUrl, WriteTestConfigJson } from './utils'
 
 const getTestConfigJson = (test: string): ITestUrl[] => {
   try {
@@ -21,7 +21,7 @@ interface ITest {
 export const AddTest = ({ test, urlName = 'home', url }: ITest) => {
   const configJson: ITestUrl[] = getTestConfigJson(test)
   // console.log('configJson:', configJson)
-  let testUrl = configJson.find(t => t.name === urlName)
+  const testUrl = configJson.find(t => t.name === urlName)
   if (testUrl) {
     testUrl.url = url
   } else {

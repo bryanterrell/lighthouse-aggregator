@@ -1,13 +1,14 @@
 import minimist from 'minimist'
 import logger from './logger'
 import { AddTest } from './maintainTest'
-import { RunComparisonConfig, RunCompareTests } from './runComparison'
+import { RunCompareTests, RunComparisonConfig } from './runComparison'
 import RunReport from './runReport'
 import { RunTests } from './runTests'
 
 const argv = minimist(process.argv.slice(2))
 
 const test = argv.test || argv.tests || argv.t
+const tests = test ? test.split(',') : []
 const loop = argv.loop || argv.l || '1'
 const filter = argv.filter || argv.f
 const url = argv.url || argv.u
@@ -28,7 +29,6 @@ switch (argv.action) {
     break
 
   case 'run-test':
-    const tests = test.split(',')
     RunTests({ tests, loop, filter })
     break
 
@@ -36,7 +36,6 @@ switch (argv.action) {
     if (comparison) {
       RunComparisonConfig(comparison)
     } else {
-      const tests = test.split(',')
       RunCompareTests(tests)
     }
     break
