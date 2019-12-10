@@ -1,36 +1,32 @@
-import fs from 'fs'
-import { CreateDir, GetTestDir, GetTestFile, IsDirectory } from './utils'
+import { CreateDir, GetTestDir, GetTestConfigJson, ITestUrl, WriteTestConfigJson } from './utils'
 
-export const CreateTest = (testGroupName: string) => {
+const getTestConfigJson = (test: string): ITestUrl[] => {
   try {
-    const dir = GetTestDir(testGroupName)
-    console.log('CreateTest', dir)
+    const dir = GetTestDir(test)
+    // console.log('CreateTest', dir)
     CreateDir(dir)
-
-    const filePath = GetTestFile(testGroupName)
-
-    if (fs.existsSync(filePath)) {
-      console.error('Test already exists:', testGroupName)
-    } else {
-      fs.writeFileSync(filePath, JSON.stringify([]))
-    }
-
-    console.log(`---> Successfully Created Test: ${filePath}`)
+    return GetTestConfigJson(test)
   } catch (error) {
     throw error
   }
 }
 
-interface IUpdateTest {
-  testGroupName: string
-  testName: string
-  testUrl: string
+interface ITest {
+  test: string
+  urlName: string
+  url: string
 }
 
-export const AddTest = ({ testGroupName, testName, testUrl }: IUpdateTest) => {
-  const testConfigFile = GetTestFile(testGroupName)
-  if (!IsDirectory(testConfigFile)) {
-    console.error('Expected test does not exist:', testConfigFile)
+export const AddTest = ({ test, urlName = 'home', url }: ITest) => {
+  const configJson: ITestUrl[] = getTestConfigJson(test)
+  // console.log('configJson:', configJson)
+  let testUrl = configJson.find(t => t.name === urlName)
+  if (testUrl) {
+    testUrl.url = url
+  } else {
+    configJson.push({ name: urlName, url })
   }
-  console.log('AddTest', { testGroupName, testName, testUrl })
+  // console.log(`Adding test to "${test}":`, testUrl)
+  // console.log('content:', configJson)
+  WriteTestConfigJson(test, configJson)
 }

@@ -1,7 +1,16 @@
 import fs from 'fs'
 import idx from 'idx'
 import path from 'path'
-import { GetJsonFile, GetTestDir, GetReportFile, IsDirectory, ITestAverage, ITestRun } from './utils'
+import logger from './logger'
+import {
+  GetJsonFile,
+  GetTestDir,
+  GetReportFilePath,
+  IsDirectory,
+  ITestAverage,
+  ITestRun,
+  WriteAndFormatJsonFile,
+} from './utils'
 
 const getNonzeroArray = (array, field) => {
   return array.filter(f => !isNaN(f[field]) && f[field] > 0).map(m => m[field])
@@ -28,8 +37,8 @@ const processTestDir = async (reportName: string, testPath: string) => {
 
   for (const filename of filenames) {
     if (filename.includes('.json')) {
-      const filepath = path.join(testPath, filename)
-      const jsonFile = GetJsonFile(filepath)
+      const filePath = path.join(testPath, filename)
+      const jsonFile = GetJsonFile(filePath)
       const jsonContent = JSON.parse(jsonFile)
       const nameArray = filename.split('--')
       const testName = Array.isArray(nameArray) && nameArray.length > 0 ? nameArray[0] : ''
@@ -61,7 +70,7 @@ const processTestDir = async (reportName: string, testPath: string) => {
 
 const RunReport = async (reportName: string) => {
   try {
-    console.log(`Processing lighthouse tests for report "${reportName}"`)
+    logger.info(`Processing lighthouse tests for report "${reportName}"`)
     const report: ITestAverage[] = []
 
     const groupPath = GetTestDir(reportName)
@@ -78,9 +87,10 @@ const RunReport = async (reportName: string) => {
     }
 
     // console.log(report)
-    fs.writeFileSync(`${GetReportFile(reportName)}`, JSON.stringify(report))
+    // fs.writeFileSync(`${GetReportFilePath(reportName)}`, JSON.stringify(report))
+    WriteAndFormatJsonFile(GetReportFilePath(reportName), report)
   } catch (error) {
-    console.log('[RunReport] Uncaught Exception:', error)
+    logger.error('[RunReport] Uncaught Exception:', error)
   }
 }
 

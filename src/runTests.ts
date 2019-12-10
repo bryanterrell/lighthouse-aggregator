@@ -2,7 +2,7 @@ import * as chromeLauncher from 'chrome-launcher'
 import fs from 'fs'
 import lighthouse from 'lighthouse/lighthouse-core'
 import ReportGenerator from 'lighthouse/lighthouse-core/report/report-generator'
-import { CreateDir, IsDirectory, GetDisplayDate, GetJsonFile, GetTestDir, GetTestFile } from './utils'
+import { CreateDir, GetDisplayDate, GetJsonFile, GetTestDir, GetTestFilePath, WriteJsonFile } from './utils'
 
 interface IRunTest {
   groupPath: string
@@ -56,17 +56,18 @@ const runTest = async ({ groupPath, testName, url, options = DEFAULT_CHROME_OPTI
 
     CreateDir(dir)
 
-    fs.writeFileSync(`${dir}/${filename}.json`, jsonReport)
+    // fs.writeFileSync(`${dir}/${filename}.json`, jsonReport)
+    WriteJsonFile(`${dir}/${filename}.json`, jsonReport)
     console.log(`---> Successfully Wrote to File: ${dir}/${filename}.json`)
   } catch (error) {
     throw error
   }
 }
 
-export async function RunSingleTest(testGroup: string, filterTest?: string[]) {
+export async function RunSingleTest(test: string, filterTest?: string[]) {
   try {
-    const groupPath = GetTestDir(testGroup)
-    const jsonFile = GetJsonFile(GetTestFile(testGroup))
+    const groupPath = GetTestDir(test)
+    const jsonFile = GetJsonFile(GetTestFilePath(test))
     const jsonContent = JSON.parse(jsonFile)
 
     // https://www.darraghoriordan.com/2019/08/04/looping-await-each-item/
@@ -82,17 +83,17 @@ export async function RunSingleTest(testGroup: string, filterTest?: string[]) {
 }
 
 interface IRunTests {
-  count: string
-  testGroups: string[]
+  tests: string[]
+  loop: string
   filter: string[]
 }
 
-export async function RunTests({ testGroups, count, filter }: IRunTests) {
+export async function RunTests({ tests, loop, filter }: IRunTests) {
   const validTestGroups = []
-  for (const testGroup of testGroups) {
-    const testJsonPath = GetTestFile(testGroup)
+  for (const test of tests) {
+    const testJsonPath = GetTestFilePath(test)
     if (fs.existsSync(testJsonPath)) {
-      validTestGroups.push(testGroup)
+      validTestGroups.push(test)
     } else {
       console.log(`Test not found - Skipping: ${testJsonPath}`)
     }
@@ -101,12 +102,12 @@ export async function RunTests({ testGroups, count, filter }: IRunTests) {
   if (validTestGroups.length > 0) {
     await launchChrome()
 
-    // console.log('RunTests:', { count, testGroups, filter })
-    const countNbr: number = parseInt(count)
-    for (let i = 0; i < countNbr; i++) {
+    // console.log('RunTests:', { loop, tests, filter })
+    const loopNbr: number = parseInt(loop)
+    for (let i = 0; i < loopNbr; i++) {
       console.log('[RunSetOfTests] Test Run # ', i + 1)
-      for (const testGroup of validTestGroups) {
-        await RunSingleTest(testGroup)
+      for (const test of validTestGroups) {
+        await RunSingleTest(test, filter)
       }
     }
 
