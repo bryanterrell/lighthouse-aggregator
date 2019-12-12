@@ -42,6 +42,8 @@ yarn run test --test=imdb,moviedb --loop=3
 ```
 
 ### Generate Aggregate Report for Test
+NOTE: to generate a comparison, you can skip to Compare Tests and the individual test reports will be generated automatically.
+
 To generate an aggregate report for a test:
 ```
 yarn run report --test=imdb
